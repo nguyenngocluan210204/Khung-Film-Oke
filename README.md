@@ -76,7 +76,7 @@
 
         #download-btn {
             background-color: #4CAF50;
-            display: none; /* Ẩn nút tải xuống ban đầu */
+            display: none;
         }
 
         #download-btn:hover {
@@ -187,14 +187,14 @@
                         scaledHeight
                     );
 
-                    ctx.globalCompositeOperation = 'lighten';
+                    // Thay đổi chế độ hòa trộn thành darken
+                    ctx.globalCompositeOperation = 'darken';
                     ctx.drawImage(tempCanvas, 0, 0, frameWidth, frameHeight);
 
                     const resultImg = document.createElement('img');
                     resultImg.src = canvas.toDataURL('image/png');
                     document.getElementById('results').appendChild(resultImg);
 
-                    // Hiển thị nút tải xuống sau khi xử lý ảnh
                     document.getElementById('download-btn').style.display = 'block';
                     document.getElementById('download-btn').href = resultImg.src;
                     document.getElementById('download-btn').download = 'framed_image.png';
