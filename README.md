@@ -11,7 +11,6 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-size: 16px; /* Kích thước phông chữ cơ bản */
         }
 
         h1 {
@@ -77,26 +76,11 @@
 
         #download-btn {
             background-color: #4CAF50;
-            display: none;
+            display: none; /* Ẩn nút tải xuống ban đầu */
         }
 
         #download-btn:hover {
             background-color: #3e8e41;
-        }
-
-        /* CSS cho màn hình nhỏ (điện thoại) */
-        @media (max-width: 600px) {
-            body {
-                font-size: 14px; /* Giảm kích thước phông chữ */
-            }
-
-            h1 {
-                font-size: 1.5rem; /* Giảm kích thước tiêu đề */
-            }
-
-            .container {
-                padding: 10px; /* Giảm padding */
-            }
         }
     </style>
 </head>
@@ -115,7 +99,108 @@
     </div>
 
     <script>
-        // ... (JavaScript code)
+        document.getElementById('render-btn').addEventListener('click', () => {
+            const imagesInput = document.getElementById('upload-images').files;
+            const framesInput = document.getElementById('upload-frames').files;
+
+            if (imagesInput.length === 0 || framesInput.length === 0) {
+                alert('Vui lòng tải ảnh và ít nhất một khung lên.');
+                return;
+            }
+
+            const frames = Array.from(framesInput).map(frameFile => {
+                const frameImage = new Image();
+                frameImage.src = URL.createObjectURL(frameFile);
+                return frameImage;
+            });
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            let loadedFrames = 0;
+
+            frames.forEach(frameImage => {
+                frameImage.onload = () => {
+                    loadedFrames++;
+                    if (loadedFrames === frames.length) {
+                        processImages(imagesInput, frames);
+                    }
+                };
+            });
+        });
+
+        function processImages(imagesInput, frames) {
+            Array.from(imagesInput).forEach(imageFile => {
+                const img = new Image();
+                const imgURL = URL.createObjectURL(imageFile);
+                img.src = imgURL;
+
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    const isPortrait = img.height > img.width;
+
+                    const frameImage = frames.length > 1
+                        ? frames[Math.floor(Math.random() * frames.length)]
+                        : frames[0];
+
+                    let frameWidth = frameImage.width;
+                    let frameHeight = frameImage.height;
+                    const tempCanvas = document.createElement('canvas');
+                    const tempCtx = tempCanvas.getContext('2d');
+
+                    if (isPortrait && frameWidth > frameHeight) {
+                        tempCanvas.width = frameHeight;
+                        tempCanvas.height = frameWidth;
+                        tempCtx.translate(frameHeight / 2, frameWidth / 2);
+                        tempCtx.rotate(Math.PI / 2);
+                        tempCtx.drawImage(frameImage, -frameWidth / 2, -frameHeight / 2);
+                        [frameWidth, frameHeight] = [frameHeight, frameWidth];
+                    } else if (!isPortrait && frameHeight > frameWidth) {
+                        tempCanvas.width = frameHeight;
+                        tempCanvas.height = frameWidth;
+                        tempCtx.translate(frameHeight / 2, frameWidth / 2);
+                        tempCtx.rotate(-Math.PI / 2);
+                        tempCtx.drawImage(frameImage, -frameWidth / 2, -frameHeight / 2);
+                        [frameWidth, frameHeight] = [frameHeight, frameWidth];
+                    } else {
+                        tempCanvas.width = frameWidth;
+                        tempCanvas.height = frameHeight;
+                        tempCtx.drawImage(frameImage, 0, 0);
+                    }
+
+                    const scale = Math.max(frameWidth / img.width, frameHeight / img.height);
+                    const scaledWidth = img.width * scale;
+                    const scaledHeight = img.height * scale;
+                    const cropX = (scaledWidth - frameWidth) / 2;
+                    const cropY = (scaledHeight - frameHeight) / 2;
+
+                    canvas.width = frameWidth;
+                    canvas.height = frameHeight;
+
+                    ctx.drawImage(
+                        img,
+                        -cropX,
+                        -cropY,
+                        scaledWidth,
+                        scaledHeight
+                    );
+
+                    ctx.globalCompositeOperation = 'lighten';
+                    ctx.drawImage(tempCanvas, 0, 0, frameWidth, frameHeight);
+
+                    const resultImg = document.createElement('img');
+                    resultImg.src = canvas.toDataURL('image/png');
+                    document.getElementById('results').appendChild(resultImg);
+
+                    // Hiển thị nút tải xuống sau khi xử lý ảnh
+                    document.getElementById('download-btn').style.display = 'block';
+                    document.getElementById('download-btn').href = resultImg.src;
+                    document.getElementById('download-btn').download = 'framed_image.png';
+                };
+            });
+        }
     </script>
 </body>
 </html>
