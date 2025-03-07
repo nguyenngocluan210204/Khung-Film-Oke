@@ -183,7 +183,7 @@
                     );
 
                     // Chồng khung lên ảnh
-                    ctx.globalCompositeOperation = 'dartendarten';
+                    ctx.globalCompositeOperation = 'darken';
                     ctx.drawImage(tempCanvas, 0, 0, frameWidth, frameHeight);
 
                     // Thêm kết quả vào giao diện
