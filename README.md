@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finndei Frame</title>
+    <style>
+        body {
             background-color: #121212;
             color: #ffffff;
             font-family: Arial, sans-serif;
@@ -82,7 +85,6 @@
     </style>
 </head>
 <body>
-    <h1>Finndei Frame</h1>
     <div class="container">
         <label for="upload-images">Tải ảnh lên:</label>
         <input type="file" id="upload-images" accept="image/*" multiple>
@@ -200,3 +202,5 @@
             });
         }
     </script>
+</body>
+</html>
