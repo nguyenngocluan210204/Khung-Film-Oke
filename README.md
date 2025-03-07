@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finndei Frame</title>
     <style>
         body {
             background-color: #121212;
@@ -204,4 +203,3 @@
         }
     </script>
 </body>
-</html># Khung-Film-Oke
