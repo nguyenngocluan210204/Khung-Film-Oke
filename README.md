@@ -57,7 +57,6 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background-color 0.3s;
-            margin-bottom: 10px;
         }
 
         button:hover {
@@ -73,15 +72,6 @@
         .results {
             text-align: center;
         }
-
-        #download-btn {
-            background-color: #4CAF50;
-            display: none;
-        }
-
-        #download-btn:hover {
-            background-color: #3e8e41;
-        }
     </style>
 </head>
 <body>
@@ -93,7 +83,6 @@
         <input type="file" id="upload-frames" accept="image/*" multiple>
 
         <button id="render-btn">Xử lý ảnh</button>
-        <button id="download-btn">Tải xuống</button>
 
         <div class="results" id="results"></div>
     </div>
@@ -115,7 +104,7 @@
             });
 
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
+            resultsDiv.innerHTML = ''; // Xóa kết quả trước đó
 
             let loadedFrames = 0;
 
@@ -139,8 +128,10 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
 
+                    // Xác định ảnh là portrait hay landscape
                     const isPortrait = img.height > img.width;
 
+                    // Chọn frame ngẫu nhiên nếu có nhiều frame
                     const frameImage = frames.length > 1
                         ? frames[Math.floor(Math.random() * frames.length)]
                         : frames[0];
@@ -151,6 +142,7 @@
                     const tempCtx = tempCanvas.getContext('2d');
 
                     if (isPortrait && frameWidth > frameHeight) {
+                        // Xoay frame thành portrait
                         tempCanvas.width = frameHeight;
                         tempCanvas.height = frameWidth;
                         tempCtx.translate(frameHeight / 2, frameWidth / 2);
@@ -158,6 +150,7 @@
                         tempCtx.drawImage(frameImage, -frameWidth / 2, -frameHeight / 2);
                         [frameWidth, frameHeight] = [frameHeight, frameWidth];
                     } else if (!isPortrait && frameHeight > frameWidth) {
+                        // Xoay frame thành landscape
                         tempCanvas.width = frameHeight;
                         tempCanvas.height = frameWidth;
                         tempCtx.translate(frameHeight / 2, frameWidth / 2);
@@ -170,6 +163,7 @@
                         tempCtx.drawImage(frameImage, 0, 0);
                     }
 
+                    // Resize và cắt ảnh để khớp với khung
                     const scale = Math.max(frameWidth / img.width, frameHeight / img.height);
                     const scaledWidth = img.width * scale;
                     const scaledHeight = img.height * scale;
@@ -179,6 +173,7 @@
                     canvas.width = frameWidth;
                     canvas.height = frameHeight;
 
+                    // Vẽ ảnh đã cắt
                     ctx.drawImage(
                         img,
                         -cropX,
@@ -187,17 +182,14 @@
                         scaledHeight
                     );
 
-                    // Thay đổi chế độ hòa trộn thành darken
-                    ctx.globalCompositeOperation = 'darken';
+                    // Chồng khung lên ảnh
+                    ctx.globalCompositeOperation = 'dartendarten';
                     ctx.drawImage(tempCanvas, 0, 0, frameWidth, frameHeight);
 
+                    // Thêm kết quả vào giao diện
                     const resultImg = document.createElement('img');
                     resultImg.src = canvas.toDataURL('image/png');
                     document.getElementById('results').appendChild(resultImg);
-
-                    document.getElementById('download-btn').style.display = 'block';
-                    document.getElementById('download-btn').href = resultImg.src;
-                    document.getElementById('download-btn').download = 'framed_image.png';
                 };
             });
         }
